@@ -168,20 +168,51 @@ function clearOptions() {
 
 
 function inputFields() {
+    let initialsForm = document.createElement("form");
+    container.appendChild(initialsForm);
+    initialsForm.setAttribute("id", "form");
+    let label = document.createElement("label");
+    initialsForm.appendChild(label);
+    label.textContent = "Enter initials: "
+    let input = document.createElement("input")
+    initialsForm.appendChild(input);
+    input.setAttribute("id", "initials");
+    let submit = document.createElement("button");
+    initialsForm.appendChild(submit);
+    submit.setAttribute("id", "submit");
+    submit.textContent = "Submit";
 
+    title.setAttribute("style", "align-self: start")
+    content.setAttribute("style", "align-self: start; font-size: 150%");
+
+    
+    input.addEventListener("keydown", stopReload);
+    submit.addEventListener("click", addScore);
     
 }
 
 function stopReload(event) {
-
+    if(event.key === "Enter") {
+        event.preventDefault();
+    }
 }
 
 function addScore(event) {
-
+    if(event !== undefined) {
+        event.preventDefault();
+    }
+    let id = document.getElementById("initials");
+    if(id.value.length > 3 || id.value.length === 0) {
+        invalidInput();
+        return;
+    }
+    isQuizOngoing = false;
+    document.getElementById("form").remove();
+    saveScore(id);
 }
 
 function saveScore(id) {
-
+    
 }
 
 function invalidInput() {
