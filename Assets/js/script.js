@@ -83,7 +83,7 @@ function runTimer () {
         timer.textContent = `Time: ${timeLeft} seconds`;
         if(timeLeft === 0) {
             clearInterval(clock);
-            if(title.textContent !== "All Done.") {
+            if(title.textContent !== "Drum roll...") {
                 endOfQuiz();
             }
         }
@@ -212,31 +212,94 @@ function addScore(event) {
 }
 
 function saveScore(id) {
-    
+    if(localStorage.getItem("leaderboard") !== null) {
+        leaderboard = JSON.parse(localStorage.getItem("leaderboard"));
+    }
+    leaderboard.push(`${score} ${id.value}`);
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+    showScores();    
 }
 
 function invalidInput() {
-
+    answer.textContent = "Initials must be entered and three characters or less";
+    answer.setAttribute("style", "color: black");
+    clearAnswer();
+    let submit = document.getElementById("submit");
+    submit.addEventListener("click", addScore);
 }
 
 function showScores() {
-
+    if(!isQuizOngoing) {
+        title.textContent = "High Scores";
+        // hides start quiz button if view high scores is clicked at beginning
+        start.setAttribute("style", "display: none");
+        writeScores();
+        createEndButtons();
+    } else if(title.textContent === "All Done.") {
+        answer.textContent = "Please enter your initials first";
+        answer.setAttribute("style", "color: black");
+        clearAnswer();
+    } else {
+        answer.textContent = "Cannot view scores until the quiz is over";
+        answer.setAttribute("style", "color: black");
+        clearAnswer();
+    }
 }
 
 function writeScores() {
-
+    content.textContent = "";
+    content.setAttribute("style", "white-space: pre-wrap; font-size: 150%");
+    if(localStorage.getItem("leaderboard") !== null) {
+        leaderboard = JSON.parse(localStorage.getItem("leaderboard"));
+    }
+    leaderboard.sort();
+    leaderboard.reverse();
+    let limit = 11;
+    if(limit > leaderboard.length) {
+        limit = leaderboard.length;
+    }
+    for(let i = 0; i < limit; i++) {
+        content.textContent += leaderboard[i] + '\n';
+    }
 }
 
 
 function createEndButtons() {
-
+    if(!document.getElementById("restart")) {
+        let restartVar = document.createElement("button");
+        container.appendChild(restartVar);
+        restartVar.textContent = "Go Back";
+        restartVar.setAttribute("id", "restart");
+        
+        let clearScoresVar = document.createElement("button");
+        container.appendChild(clearScoresVar);
+        clearScoresVar.textContent = "Clear High Scores";
+        clearScoresVar.setAttribute("id", "clearScores");
+        
+        restartVar.addEventListener("click", restart);
+        clearScoresVar.addEventListener("click", clearScores)
+    }
 }
 
 function restart() {
-
+    title.setAttribute("style", "align-self: center");
+    content.setAttribute("style", "align-self: center; font-size: 110%");
+    document.getElementById("restart").remove();
+    document.getElementById("clearScores").remove();
+    title.textContent = "Coding Quiz Challenge";
+    content.textContent = "Answer the questions in the time limit! Wrong answers will deduct time!";
+    start.setAttribute("style", "display: visible");
+    currentQues = 0;
+    score = 0;
+    timeLeft = 61;
+    init();
 }
 
 
 function clearScores() {
- 
+    localStorage.clear();
+    content.textContent = "";
+    leaderboard = [];
 }
+
+init();
